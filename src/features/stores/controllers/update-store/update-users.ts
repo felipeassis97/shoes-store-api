@@ -7,6 +7,7 @@ import { HttpRequest, HttpResponse, IController } from "../../../../core/protoco
 
 export class UpdateStoreController implements IController {
   constructor(private readonly updateUserRepository: IStoresRepository) { }
+
   async handle(httpRequest: HttpRequest<UpdateStoreParams>): Promise<HttpResponse<Store>> {
     const id = httpRequest?.params?.id;
     const body = httpRequest?.body;
@@ -32,9 +33,9 @@ export class UpdateStoreController implements IController {
         return badRequest("Error: Some received field is not allowed.");
       }
 
-      const user = await this.updateUserRepository.updateStore(id, body);
+      const store = await this.updateUserRepository.updateStore(id, body);
 
-      return ok(user);
+      return ok(store);
     } catch (error) {
       return internalError(`${error}`);
     }

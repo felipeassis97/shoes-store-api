@@ -11,7 +11,7 @@ export class CreateStoreController implements IController {
     httpRequest: HttpRequest<CreateStoresParams>
   ): Promise<HttpResponse<Store | string>> {
     try {
-      const requiredFields = ["name", "description", "logo"];
+      const requiredFields = ["name", "description"];
       const addressFields = ["street", "neighborhood", "city", "country", "zipcode", "lat", "lng"];
 
       // Validate body
