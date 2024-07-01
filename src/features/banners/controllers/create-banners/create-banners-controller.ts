@@ -4,7 +4,6 @@ import { IBannersRepository } from "../../repositories/i-banners-repository";
 import { badRequest, created, internalError } from "../../../../core/helpers/helpers";
 import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
 
-
 export class CreateBannersController implements IController {
     constructor(private readonly createBannerRepository: IBannersRepository) { }
 

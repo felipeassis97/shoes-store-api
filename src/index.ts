@@ -22,6 +22,9 @@ import { GetBrandController } from "./features/brands/controllers/get-brands/get
 import { MongoProductsRepository } from "./features/products/repositories/mongo-products-repository";
 import { CreateProductController } from "./features/products/controllers/create-product/create-product-controller";
 import { DeleteProductController } from "./features/products/controllers/delete-product/delete-product";
+import { GetProductsController } from "./features/products/controllers/get-products/get-products-controller-controller";
+import { GetProductsByStoreController } from "./features/products/controllers/get-products/get-products-by-store-controller";
+import { GetProductsByBrandController } from "./features/products/controllers/get-products/get-products-by-brand-controller";
 
 
 const main = async () => {
@@ -167,6 +170,44 @@ const main = async () => {
     });
     res.status(statusCode).send(body);
   });
+
+  app.get('/products', async (_, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoProductsRepository(bucket);
+    const controller = new GetProductsController(repository);
+    const { body, statusCode } = await controller.handle();
+    res.status(statusCode).send(body);
+  });
+
+  app.get("/products/store/:id", async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoProductsRepository(bucket);
+    const controller = new GetProductsByStoreController(repository);
+    const { body, statusCode } = await controller.handle({
+      params: req.params,
+    });
+    res.status(statusCode).send(body);
+  });
+
+  app.get("/products/brand/:id", async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoProductsRepository(bucket);
+    const controller = new GetProductsByBrandController(repository);
+    const { body, statusCode } = await controller.handle({
+      params: req.params,
+    });
+    res.status(statusCode).send(body);
+  });
+
+  // app.get("/products/brand:id", async (req, res) => {
+  //   const bucket = new FirebaseBucket();
+  //   const repository = new MongoBrandsRepository(bucket);
+  //   const controller = new GetBrandController(repository);
+  //   const { body, statusCode } = await controller.handle({
+  //     params: req.params,
+  //   });
+  //   res.status(statusCode).send(body);
+  // });
 
   const port = process.env.PORT || 8000;
 

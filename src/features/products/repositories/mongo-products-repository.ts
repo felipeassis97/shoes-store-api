@@ -64,4 +64,40 @@ export class MongoProductsRepository implements IProductRepository {
             ...rest,
         };
     }
+
+    async getProducts(): Promise<Product[]> {
+        const banners = await SetupConnections.db
+            .collection<Omit<Product, "id">>("products")
+            .find({})
+            .toArray();
+
+        return banners.map(({ _id, ...rest }) => ({
+            ...rest,
+            id: _id.toHexString(),
+        }));
+    }
+
+    async getProductsByStoreId(storeId: string): Promise<Product[]> {
+        const products = await SetupConnections.db
+            .collection<Omit<Product, "id">>("products")
+            .find({ store_id: storeId })
+            .toArray();
+
+        return products.map(({ _id, ...rest }) => ({
+            ...rest,
+            id: _id.toHexString(),
+        }));
+    }
+
+    async getProductsByBrandId(brandId: string): Promise<Product[]> {
+        const products = await SetupConnections.db
+            .collection<Omit<Product, "id">>("products")
+            .find({ brand_id: brandId })
+            .toArray();
+
+        return products.map(({ _id, ...rest }) => ({
+            ...rest,
+            id: _id.toHexString(),
+        }));
+    }
 }
