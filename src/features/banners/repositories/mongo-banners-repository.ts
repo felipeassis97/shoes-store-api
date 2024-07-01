@@ -22,6 +22,8 @@ export class MongoBannersRepository implements IBannersRepository {
       .collection("banners")
       .insertOne(params);
 
+    console.log(insertedId.toHexString());
+
     const banners = await SetupConnections.db
       .collection<Omit<Banner, "id">>("banners")
       .findOne({ _id: insertedId });

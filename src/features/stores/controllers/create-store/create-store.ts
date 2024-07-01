@@ -5,7 +5,7 @@ import { badRequest, created, internalError } from "../../../../core/helpers/hel
 import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
 
 export class CreateStoreController implements IController {
-  constructor(private readonly createStoreRepository: IStoresRepository) { }
+  constructor(private readonly storeRepository: IStoresRepository) { }
 
   async handle(
     httpRequest: HttpRequest<CreateStoresParams>
@@ -38,11 +38,11 @@ export class CreateStoreController implements IController {
           return badRequest(`Error: Field ${field} in address is required`);
         }
       }
-
-      const user = await this.createStoreRepository.createStore(
-        httpRequest.body
-      );
-      return created(user);
+      const store = await this.storeRepository
+        .createStore(
+          httpRequest.body
+        );
+      return created(store);
     } catch (error) {
       return internalError(`${error}`);
     }
