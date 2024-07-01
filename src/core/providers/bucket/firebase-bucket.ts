@@ -4,32 +4,20 @@ import { IBucket } from './i-bucket';
 
 export class FirebaseBucket implements IBucket {
 
-    async uploadmultipleImagesToBucket(files: [any], id: string): Promise<string[]> {
+    async uploadmultipleImagesToBucket(folderName: string, files: Express.Multer.File[], id: string): Promise<string[]> {
         try {
-            const bucket = admin.storage().bucket();
             const imageUrls: string[] = [];
 
-            for (const file of files) {
-                const imageId = uuid.v4();
-                const fileExtension = file.mimetype.split('/')[1];
-                const fileName = `${id}/${id}_${imageId}.${fileExtension}`;
-                const storageFile = bucket.file(fileName);
-
-                storageFile.save(file.buffer, {
-                    metadata: { contentType: file.mimetype },
-                    public: true,
-                    validation: 'md5'
-                });
-
-                const imageUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-                imageUrls.push(imageUrl);
-            }
-
+            files.map(async (file) => {
+                var url = await this.uploadSingleImageToBucket(folderName, file, id)
+                imageUrls.push(url);
+            });
             return imageUrls;
         } catch (error) {
-            throw '';
+            throw new Error(`Failed to upload multiple images: ${error}`);
         }
     }
+
     async uploadSingleImageToBucket(folderName: string, file: any, id: string): Promise<string> {
         try {
             const bucket = admin.storage().bucket();
@@ -46,7 +34,7 @@ export class FirebaseBucket implements IBucket {
             const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
             return url;
         } catch (error) {
-            throw '';
+            throw new Error(`Failed to upload single image: ${error}`);
         }
     }
 
