@@ -1,8 +1,8 @@
-import { Product } from "../models/product";
+import { Product } from "../../models/product";
 import { CreateProductParams } from "./create-product-params";
-import { IProductRepository } from "../repositories/i-product";
-import { badRequest, internalError, ok } from "../../../core/helpers/helpers";
-import { HttpRequest, HttpResponse, IController } from "../../../core/protocols/protocols";
+import { IProductRepository } from "../../repositories/i-product";
+import { badRequest, internalError, ok } from "../../../../core/helpers/helpers";
+import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
 
 export class CreateProductController implements IController {
     constructor(private readonly productRepository: IProductRepository) { }
