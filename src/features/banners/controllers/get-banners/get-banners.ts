@@ -1,6 +1,6 @@
 import { Banner } from "../../models/banner";
 import { IBannersRepository } from "../../repositories/i-banners-repository";
-import { created, internalError } from "../../../../core/helpers/helpers";
+import { internalError, ok } from "../../../../core/helpers/helpers";
 import { HttpResponse, IController } from "../../../../core/protocols/protocols";
 
 
@@ -10,8 +10,8 @@ export class GetBannersController implements IController {
     async handle(
     ): Promise<HttpResponse<Banner | string>> {
         try {
-            const user = await this.createBannerRepository.getBanners();
-            return created(user);
+            const banners = await this.createBannerRepository.getBanners();
+            return ok(banners);
         } catch (error) {
             return internalError(`${error}`);
         }

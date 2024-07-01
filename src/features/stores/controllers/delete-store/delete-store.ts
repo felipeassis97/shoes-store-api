@@ -4,17 +4,18 @@ import { badRequest, internalError, ok } from "../../../../core/helpers/helpers"
 import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
 
 export class DeleteStoreController implements IController {
-  constructor(private readonly deleteUserRepository: IStoresRepository) { }
+  constructor(private readonly storeRepository: IStoresRepository) { }
+
   async handle(httpRequest: HttpRequest<string>): Promise<HttpResponse<Store>> {
     try {
       const id = httpRequest?.params?.id;
 
       if (!id) {
-        return badRequest("Error: Missing user id.");
+        return badRequest("Error: Missing Store id.");
       }
 
-      const user = await this.deleteUserRepository.deleteStore(id);
-      return ok(user);
+      const store = await this.storeRepository.deleteStore(id);
+      return ok(store);
 
     } catch (error) {
       return internalError(`${error}`)

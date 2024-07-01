@@ -17,6 +17,7 @@ import { MongoBrandsRepository } from "./features/brands/repositories/mongo-bran
 import { CreateBrandController } from "./features/brands/controllers/create-brand/create-brand";
 import { GetBrandsController } from "./features/brands/controllers/get-brands/get-brands-controller";
 import { DeleteBrandController } from "./features/brands/controllers/delete-brand/delete-brand-controller";
+import { GetStoreByIDController } from "./features/stores/controllers/get-stores/get-store-by-id";
 
 
 const main = async () => {
@@ -27,7 +28,7 @@ const main = async () => {
   const app = express();
   app.use(express.json());
 
-  //User
+  //stores
   app.get("/stores", async (_, res) => {
     const bucket = new FirebaseBucket()
     const repository = new MongoStoresRepository(bucket);
@@ -59,6 +60,16 @@ const main = async () => {
     const bucket = new FirebaseBucket()
     const repository = new MongoStoresRepository(bucket);
     const controller = new DeleteStoreController(repository);
+    const { body, statusCode } = await controller.handle({
+      params: req.params,
+    });
+    res.status(statusCode).send(body);
+  });
+
+  app.get("/store/:id", async (req, res) => {
+    const bucket = new FirebaseBucket()
+    const repository = new MongoStoresRepository(bucket);
+    const controller = new GetStoreByIDController(repository);
     const { body, statusCode } = await controller.handle({
       params: req.params,
     });

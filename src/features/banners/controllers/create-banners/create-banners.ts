@@ -27,10 +27,10 @@ export class CreateBannersController implements IController {
                 }
             }
 
-            const user = await this.createBannerRepository.createBanners(
+            const banner = await this.createBannerRepository.createBanners(
                 httpRequest.body
             );
-            return created(user);
+            return created(banner);
         } catch (error) {
             return internalError(`${error}`);
         }

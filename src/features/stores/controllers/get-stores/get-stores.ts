@@ -1,21 +1,18 @@
-import { IController } from "../../../../core/protocols/protocols";
+import { internalError, ok } from "../../../../core/helpers/helpers";
+import { HttpResponse, IController } from "../../../../core/protocols/protocols";
+import { Store } from "../../models/store";
 import { IStoresRepository } from "../../repositories/i-stores-repository";
 
 export class GetStoresController implements IController {
-  constructor(private readonly getUserRepository: IStoresRepository) { }
+  constructor(private readonly storeRepository: IStoresRepository) { }
 
-  async handle() {
+  async handle(): Promise<HttpResponse<Store[]>> {
     try {
-      const users = await this.getUserRepository.getStores();
-      return {
-        statusCode: 200,
-        body: users,
-      };
+      const stores = await this.storeRepository.getStores();
+      return ok(stores);
+
     } catch (error) {
-      return {
-        statusCode: 500,
-        body: `${error}`,
-      };
+      return internalError(`${error}`);
     }
   }
 }

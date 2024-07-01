@@ -6,7 +6,7 @@ import { HttpRequest, HttpResponse, IController } from "../../../../core/protoco
 
 
 export class UpdateStoreController implements IController {
-  constructor(private readonly updateUserRepository: IStoresRepository) { }
+  constructor(private readonly storeRepository: IStoresRepository) { }
 
   async handle(httpRequest: HttpRequest<UpdateStoreParams>): Promise<HttpResponse<Store>> {
     const id = httpRequest?.params?.id;
@@ -16,7 +16,7 @@ export class UpdateStoreController implements IController {
         return badRequest("Error: Body missing fields.");
       }
       if (!id) {
-        return badRequest("Error: Missing user id.");
+        return badRequest("Error: Missing Store id.");
       }
       const allowedFieldsToUpdate = ["name", "description", "logo"];
       const addressAllowedFieldsToUpdate = ["street", "neighborhood", "city", "country", "zipcode", "lat", "lng"];
@@ -33,7 +33,7 @@ export class UpdateStoreController implements IController {
         return badRequest("Error: Some received field is not allowed.");
       }
 
-      const store = await this.updateUserRepository.updateStore(id, body);
+      const store = await this.storeRepository.updateStore(id, body);
 
       return ok(store);
     } catch (error) {

@@ -20,15 +20,15 @@ export class MongoStoresRepository implements IStoresRepository {
             .collection("stores")
             .insertOne(params);
 
-        const user = await SetupConnections.db
+        const store = await SetupConnections.db
             .collection<Omit<Store, "id">>("stores")
             .findOne({ _id: insertedId });
 
-        if (!user) {
+        if (!store) {
             throw new Error("Store not created");
         }
 
-        const { _id, ...rest } = user;
+        const { _id, ...rest } = store;
         return {
             id: _id.toHexString(),
             ...rest,
@@ -75,6 +75,23 @@ export class MongoStoresRepository implements IStoresRepository {
         }));
     }
 
+    async getStoreById(id: string): Promise<Store> {
+        const store = await SetupConnections.db
+            .collection<Omit<Store, "id">>("stores")
+            .findOne({ _id: new ObjectId(id) });
+
+        if (!store) {
+            throw new Error("Store not found");
+        }
+
+        const { _id, ...rest } = store;
+        return {
+            id: _id.toHexString(),
+            ...rest,
+        };
+    }
+
+
     async updateStore(id: string, params: UpdateStoreParams): Promise<Store> {
         await SetupConnections.db.collection("stores").updateOne(
             { _id: new ObjectId(id) },
@@ -85,15 +102,15 @@ export class MongoStoresRepository implements IStoresRepository {
             }
         );
 
-        const user = await SetupConnections.db
+        const store = await SetupConnections.db
             .collection<Omit<Store, "id">>("stores")
             .findOne({ _id: new ObjectId(id) });
 
-        if (!user) {
+        if (!store) {
             throw new Error("Store not updated");
         }
 
-        const { _id, ...rest } = user;
+        const { _id, ...rest } = store;
         return {
             id: _id.toHexString(),
             ...rest,
