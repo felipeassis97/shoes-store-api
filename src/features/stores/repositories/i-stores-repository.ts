@@ -7,6 +7,7 @@ import { UploadStoreLogoParams } from "../controllers/upload-image/upload-store-
 export interface IStoresRepository {
     getStores(): Promise<Store[]>;
     deleteStore(id: string): Promise<Store>;
+    getStoreById(id: string): Promise<Store>;
     createStore(params: CreateStoresParams): Promise<Store>;
     uploadLogoImage(params: UploadStoreLogoParams): Promise<Store>;
     updateStore(id: string, params: UpdateStoreParams): Promise<Store>;
