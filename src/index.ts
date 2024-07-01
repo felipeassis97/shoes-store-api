@@ -20,7 +20,8 @@ import { DeleteBrandController } from "./features/brands/controllers/delete-bran
 import { GetStoreController } from "./features/stores/controllers/get-stores/get-store-controller";
 import { GetBrandController } from "./features/brands/controllers/get-brands/get-brand-controller";
 import { MongoProductsRepository } from "./features/products/repositories/mongo-products-repository";
-import { CreateProductController } from "./features/products/controllers/create-product-controller";
+import { CreateProductController } from "./features/products/controllers/create-product/create-product-controller";
+import { DeleteProductController } from "./features/products/controllers/delete-product/delete-product";
 
 
 const main = async () => {
@@ -154,6 +155,16 @@ const main = async () => {
     const repository = new MongoProductsRepository(bucket);
     const controller = new CreateProductController(repository);
     const { body, statusCode } = await controller.handle({ body: req.body, files: req.files });
+    res.status(statusCode).send(body);
+  });
+
+  app.delete("/product/:id", async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoProductsRepository(bucket);
+    const controller = new DeleteProductController(repository);
+    const { body, statusCode } = await controller.handle({
+      params: req.params,
+    });
     res.status(statusCode).send(body);
   });
 

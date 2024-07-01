@@ -8,7 +8,6 @@ import { ObjectId } from "mongodb";
 export class MongoBrandsRepository implements IBrandRepository {
     constructor(private readonly bucket: IBucket) { }
 
-
     async deleteBrand(id: string): Promise<Brand> {
         const brand = await SetupConnections.db
             .collection<Omit<Brand, "id">>("brands")
@@ -29,7 +28,7 @@ export class MongoBrandsRepository implements IBrandRepository {
         const { _id, ...rest } = brand;
 
         // Delete bucket files
-        this.bucket.deleteFiles("brands", _id.toHexString());
+        this.bucket.deleteFiles(`brands/${brand.name}`, _id.toHexString());
 
         return {
             id: _id.toHexString(),
@@ -71,7 +70,7 @@ export class MongoBrandsRepository implements IBrandRepository {
             .insertOne({ name: params.name });
 
         //Update picture
-        const responseBucket = await this.bucket.uploadSingleImageToBucket("brands", params.image, insertedId.toHexString());
+        const responseBucket = await this.bucket.uploadSingleImageToBucket(`brands/${params.name}`, params.image, insertedId.toHexString());
 
         await SetupConnections.db.collection("brands").updateOne(
             { _id: insertedId },

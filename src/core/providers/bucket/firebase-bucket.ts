@@ -23,7 +23,7 @@ export class FirebaseBucket implements IBucket {
             const bucket = admin.storage().bucket();
             const imageId = uuid.v4();
             const fileExtension = file.mimetype.split('/')[1];
-            const fileName = `${folderName}/${id}/${imageId}.${fileExtension}`;
+            const fileName = `${folderName}/${id}_${imageId}.${fileExtension}`;
             const storageFile = bucket.file(fileName);
 
             storageFile.save(file.buffer, {
@@ -34,7 +34,7 @@ export class FirebaseBucket implements IBucket {
             const url = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
             return url;
         } catch (error) {
-            throw new Error(`Failed to upload single image: ${error}`);
+            throw new Error(`⛔️ Failed to upload single image: ${error}`);
         }
     }
 
