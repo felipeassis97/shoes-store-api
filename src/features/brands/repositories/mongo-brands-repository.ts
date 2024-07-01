@@ -8,6 +8,7 @@ import { ObjectId } from "mongodb";
 export class MongoBrandsRepository implements IBrandRepository {
     constructor(private readonly bucket: IBucket) { }
 
+
     async deleteBrand(id: string): Promise<Brand> {
         const brand = await SetupConnections.db
             .collection<Omit<Brand, "id">>("brands")
@@ -46,6 +47,22 @@ export class MongoBrandsRepository implements IBrandRepository {
             ...rest,
             id: _id.toHexString(),
         }));
+    }
+
+    async getBrand(id: string): Promise<Brand> {
+        const brand = await SetupConnections.db
+            .collection<Omit<Brand, "id">>("brands")
+            .findOne({ _id: new ObjectId(id) });
+
+        if (!brand) {
+            throw new Error("Brand not found");
+        }
+
+        const { _id, ...rest } = brand;
+        return {
+            id: _id.toHexString(),
+            ...rest,
+        };
     }
 
     async createBrand(params: CreateBrandParams): Promise<Brand> {

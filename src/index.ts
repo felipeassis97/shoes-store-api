@@ -1,23 +1,24 @@
 import express from "express";
 import { config } from "dotenv";
 import { SetupConnections } from "./core/providers/setup-connections";
-import { CreateStoreController } from "./features/stores/controllers/create-store/create-store";
-import { UpdateStoreController } from "./features/stores/controllers/update-store/update-store";
-import { DeleteStoreController } from "./features/stores/controllers/delete-store/delete-store";
+import { CreateStoreController } from "./features/stores/controllers/create-store/create-store-controller";
+import { UpdateStoreController } from "./features/stores/controllers/update-store/update-store-controller";
+import { DeleteStoreController } from "./features/stores/controllers/delete-store/delete-store-controller";
 import { MongoBannersRepository } from "./features/banners/repositories/mongo-banners-repository";
-import { GetStoresController } from "./features/stores/controllers/get-stores/get-stores";
-import { CreateBannersController } from "./features/banners/controllers/create-banners/create-banners";
+import { GetStoresController } from "./features/stores/controllers/get-stores/get-stores-controller";
+import { CreateBannersController } from "./features/banners/controllers/create-banners/create-banners-controller";
 import { MongoStoresRepository } from "./features/stores/repositories/mongo-stores-repository";
-import { GetBannersController } from "./features/banners/controllers/get-banners/get-banners";
+import { GetBannersController } from "./features/banners/controllers/get-banners/get-banners-controller";
 import { UploadStoreLogo } from "./features/stores/controllers/upload-image/upload-store-logo";
 import { FirebaseBucket } from "./core/providers/bucket/firebase-bucket";
 import { UploadMultipleImages } from "./features/stores/controllers/upload-image/upload-multiple-images";
 import { processMultiImageMiddleware, processSingleImageMiddleware } from "./core/middlewares/process-image-middleware";
 import { MongoBrandsRepository } from "./features/brands/repositories/mongo-brands-repository";
-import { CreateBrandController } from "./features/brands/controllers/create-brand/create-brand";
+import { CreateBrandController } from "./features/brands/controllers/create-brand/create-brand-controller";
 import { GetBrandsController } from "./features/brands/controllers/get-brands/get-brands-controller";
 import { DeleteBrandController } from "./features/brands/controllers/delete-brand/delete-brand-controller";
-import { GetStoreByIDController } from "./features/stores/controllers/get-stores/get-store-by-id";
+import { GetStoreController } from "./features/stores/controllers/get-stores/get-store-controller";
+import { GetBrandController } from "./features/brands/controllers/get-brands/get-brand-controller";
 
 
 const main = async () => {
@@ -69,7 +70,7 @@ const main = async () => {
   app.get("/store/:id", async (req, res) => {
     const bucket = new FirebaseBucket()
     const repository = new MongoStoresRepository(bucket);
-    const controller = new GetStoreByIDController(repository);
+    const controller = new GetStoreController(repository);
     const { body, statusCode } = await controller.handle({
       params: req.params,
     });
@@ -120,6 +121,16 @@ const main = async () => {
     const repository = new MongoBrandsRepository(bucket);
     const controller = new GetBrandsController(repository);
     const { body, statusCode } = await controller.handle();
+    res.status(statusCode).send(body);
+  });
+
+  app.get("/brand/:id", async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoBrandsRepository(bucket);
+    const controller = new GetBrandController(repository);
+    const { body, statusCode } = await controller.handle({
+      params: req.params,
+    });
     res.status(statusCode).send(body);
   });
 
