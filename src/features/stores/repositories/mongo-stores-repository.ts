@@ -10,6 +10,8 @@ import { UploadStoreLogoParams } from "../controllers/upload-image/upload-store-
 
 
 export class MongoStoresRepository implements IStoresRepository {
+    constructor(private readonly bucket: IBucket) { }
+
     static storeCollection = "stores";
     static bucket: IBucket = new FirebaseBucket();
 
@@ -51,6 +53,10 @@ export class MongoStoresRepository implements IStoresRepository {
         }
 
         const { _id, ...rest } = store;
+
+        // Delete bucket files
+        this.bucket.deleteFiles("stores", _id.toHexString());
+
         return {
             id: _id.toHexString(),
             ...rest,
@@ -95,11 +101,16 @@ export class MongoStoresRepository implements IStoresRepository {
     }
 
     async uploadLogoImage(params: UploadStoreLogoParams): Promise<Store> {
-        const responseBucket = await MongoStoresRepository.bucket.uploadSingleImageToBucket(params.image, params.storeId);
+        const responseBucket = await this.bucket.uploadSingleImageToBucket("stores", params.image, params.storeId);
+
+
+
         await SetupConnections.db.collection("stores").updateOne(
             { _id: new ObjectId(params.storeId) },
             { $set: { logo: responseBucket } }
         );
+
+
 
         const store = await SetupConnections.db
             .collection<Omit<Store, "id">>("stores")

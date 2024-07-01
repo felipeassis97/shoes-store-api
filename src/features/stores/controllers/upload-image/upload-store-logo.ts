@@ -1,9 +1,8 @@
+import { Store } from "../../models/store";
 import { UploadStoreLogoParams } from "./upload-store-logo-params";
-import { IBucket } from "../../../../core/providers/bucket/i-bucket";
+import { IStoresRepository } from "../../repositories/i-stores-repository";
 import { badRequest, internalError, ok } from "../../../../core/helpers/helpers";
 import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
-import { Store } from "../../models/store";
-import { IStoresRepository } from "../../repositories/i-stores-repository";
 
 export class UploadStoreLogo implements IController {
     constructor(private readonly storesRepository: IStoresRepository) { }

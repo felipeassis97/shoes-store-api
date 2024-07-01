@@ -2,10 +2,10 @@ import express from "express";
 import { config } from "dotenv";
 import { SetupConnections } from "./core/providers/setup-connections";
 import { CreateStoreController } from "./features/stores/controllers/create-store/create-store";
-import { UpdateStoreController } from "./features/stores/controllers/update-store/update-users";
-import { DeleteStoreController } from "./features/stores/controllers/delete-store/delete-user";
+import { UpdateStoreController } from "./features/stores/controllers/update-store/update-store";
+import { DeleteStoreController } from "./features/stores/controllers/delete-store/delete-store";
 import { MongoBannersRepository } from "./features/banners/repositories/mongo-banners-repository";
-import { GetStoresController } from "./features/stores/controllers/get-store/get-users";
+import { GetStoresController } from "./features/stores/controllers/get-stores/get-stores";
 import { CreateBannersController } from "./features/banners/controllers/create-banners/create-banners";
 import { MongoStoresRepository } from "./features/stores/repositories/mongo-stores-repository";
 import { GetBannersController } from "./features/banners/controllers/get-banners/get-banners";
@@ -13,6 +13,10 @@ import { UploadStoreLogo } from "./features/stores/controllers/upload-image/uplo
 import { FirebaseBucket } from "./core/providers/bucket/firebase-bucket";
 import { UploadMultipleImages } from "./features/stores/controllers/upload-image/upload-multiple-images";
 import { processMultiImageMiddleware, processSingleImageMiddleware } from "./core/middlewares/process-image-middleware";
+import { MongoBrandsRepository } from "./features/brands/repositories/mongo-brands-repository";
+import { CreateBrandController } from "./features/brands/controllers/create-brand/create-brand";
+import { GetBrandsController } from "./features/brands/controllers/get-brands/get-brands-controller";
+import { DeleteBrandController } from "./features/brands/controllers/delete-brand/delete-brand-controller";
 
 
 const main = async () => {
@@ -25,21 +29,24 @@ const main = async () => {
 
   //User
   app.get("/stores", async (_, res) => {
-    const repository = new MongoStoresRepository();
+    const bucket = new FirebaseBucket()
+    const repository = new MongoStoresRepository(bucket);
     const controller = new GetStoresController(repository);
     const { body, statusCode } = await controller.handle();
     res.status(statusCode).send(body);
   });
 
   app.post("/store", async (req, res) => {
-    const repository = new MongoStoresRepository();
+    const bucket = new FirebaseBucket()
+    const repository = new MongoStoresRepository(bucket);
     const controller = new CreateStoreController(repository);
     const { body, statusCode } = await controller.handle({ body: req.body });
     res.status(statusCode).send(body);
   });
 
   app.patch("/store/:id", async (req, res) => {
-    const repository = new MongoStoresRepository();
+    const bucket = new FirebaseBucket()
+    const repository = new MongoStoresRepository(bucket);
     const controller = new UpdateStoreController(repository);
     const { body, statusCode } = await controller.handle({
       body: req.body,
@@ -49,7 +56,8 @@ const main = async () => {
   });
 
   app.delete("/store/:id", async (req, res) => {
-    const repository = new MongoStoresRepository();
+    const bucket = new FirebaseBucket()
+    const repository = new MongoStoresRepository(bucket);
     const controller = new DeleteStoreController(repository);
     const { body, statusCode } = await controller.handle({
       params: req.params,
@@ -80,9 +88,37 @@ const main = async () => {
   });
 
   app.post('/upload-single', processSingleImageMiddleware, async (req, res) => {
-    const repository = new MongoStoresRepository();
+    const bucket = new FirebaseBucket()
+    const repository = new MongoStoresRepository(bucket);
     const controller = new UploadStoreLogo(repository);
     const { body, statusCode } = await controller.handle({ body: req.body, file: req.file });
+    res.status(statusCode).send(body);
+  });
+
+
+  app.post('/create-brand', processSingleImageMiddleware, async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoBrandsRepository(bucket);
+    const controller = new CreateBrandController(repository);
+    const { body, statusCode } = await controller.handle({ body: req.body, file: req.file });
+    res.status(statusCode).send(body);
+  });
+
+  app.get('/brands', async (_, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoBrandsRepository(bucket);
+    const controller = new GetBrandsController(repository);
+    const { body, statusCode } = await controller.handle();
+    res.status(statusCode).send(body);
+  });
+
+  app.delete("/brand/:id", async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoBrandsRepository(bucket);
+    const controller = new DeleteBrandController(repository);
+    const { body, statusCode } = await controller.handle({
+      params: req.params,
+    });
     res.status(statusCode).send(body);
   });
 
