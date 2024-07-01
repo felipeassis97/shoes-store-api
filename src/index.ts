@@ -19,6 +19,8 @@ import { GetBrandsController } from "./features/brands/controllers/get-brands/ge
 import { DeleteBrandController } from "./features/brands/controllers/delete-brand/delete-brand-controller";
 import { GetStoreController } from "./features/stores/controllers/get-stores/get-store-controller";
 import { GetBrandController } from "./features/brands/controllers/get-brands/get-brand-controller";
+import { MongoProductsRepository } from "./features/products/repositories/mongo-products-repository";
+import { CreateProductController } from "./features/products/controllers/create-product-controller";
 
 
 const main = async () => {
@@ -143,6 +145,15 @@ const main = async () => {
     const { body, statusCode } = await controller.handle({
       params: req.params,
     });
+    res.status(statusCode).send(body);
+  });
+
+  //Product
+  app.post('/create-product', processMultiImageMiddleware, async (req, res) => {
+    const bucket = new FirebaseBucket();
+    const repository = new MongoProductsRepository(bucket);
+    const controller = new CreateProductController(repository);
+    const { body, statusCode } = await controller.handle({ body: req.body, files: req.files });
     res.status(statusCode).send(body);
   });
 

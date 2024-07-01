@@ -18,7 +18,7 @@ const processMultiImageMiddleware = multer({
     limits: {
         fileSize: 5 * 1024 * 1024, // keep images size < 5 MB
     },
-}).array('images', 4);
+}).array('images', 10);
 
 const processSingleImageMiddleware = multer({
     storage: storage,
