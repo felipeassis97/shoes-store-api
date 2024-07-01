@@ -9,7 +9,7 @@ import { GetStoresController } from "./features/stores/controllers/get-stores/ge
 import { CreateBannersController } from "./features/banners/controllers/create-banners/create-banners-controller";
 import { MongoStoresRepository } from "./features/stores/repositories/mongo-stores-repository";
 import { GetBannersController } from "./features/banners/controllers/get-banners/get-banners-controller";
-import { UploadStoreLogo } from "./features/stores/controllers/upload-image/upload-store-logo";
+import { UploadStoreLogoController } from "./features/stores/controllers/upload-image/upload-store-logo-controller";
 import { FirebaseBucket } from "./core/providers/bucket/firebase-bucket";
 import { UploadMultipleImages } from "./features/stores/controllers/upload-image/upload-multiple-images";
 import { processMultiImageMiddleware, processSingleImageMiddleware } from "./core/middlewares/process-image-middleware";
@@ -79,16 +79,18 @@ const main = async () => {
 
   // Banner
   app.get("/banners", async (req, res) => {
-    const repository = new MongoBannersRepository();
+    const bucket = new FirebaseBucket()
+    const repository = new MongoBannersRepository(bucket);
     const controller = new GetBannersController(repository);
     const { body, statusCode } = await controller.handle();
     res.status(statusCode).send(body);
   });
 
-  app.post("/banners", async (req, res) => {
-    const repository = new MongoBannersRepository();
+  app.post("/banners", processMultiImageMiddleware, async (req, res) => {
+    const bucket = new FirebaseBucket()
+    const repository = new MongoBannersRepository(bucket);
     const controller = new CreateBannersController(repository);
-    const { body, statusCode } = await controller.handle({ body: req.body });
+    const { body, statusCode } = await controller.handle({ files: req.files });
     res.status(statusCode).send(body);
   });
 
@@ -99,10 +101,10 @@ const main = async () => {
     res.status(statusCode).send(body);
   });
 
-  app.post('/upload-single', processSingleImageMiddleware, async (req, res) => {
+  app.post('/store-logo', processSingleImageMiddleware, async (req, res) => {
     const bucket = new FirebaseBucket()
     const repository = new MongoStoresRepository(bucket);
-    const controller = new UploadStoreLogo(repository);
+    const controller = new UploadStoreLogoController(repository);
     const { body, statusCode } = await controller.handle({ body: req.body, file: req.file });
     res.status(statusCode).send(body);
   });

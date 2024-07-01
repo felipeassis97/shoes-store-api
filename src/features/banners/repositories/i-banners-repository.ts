@@ -1,7 +1,7 @@
 import { Banner } from "../models/banner";
-import { CreateBannerParams } from "../controllers/create-banners/create-banner-params";
+import { CreateBannersParams } from "../controllers/create-banners/create-banners-params";
 
 export interface IBannersRepository {
     getBanners(): Promise<Banner[]>;
-    createBanners(params: CreateBannerParams): Promise<Banner>;
+    createBanners(params: CreateBannersParams): Promise<Banner>;
 }

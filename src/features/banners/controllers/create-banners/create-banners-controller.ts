@@ -1,6 +1,5 @@
-
 import { Banner } from "../../models/banner";
-import { CreateBannerParams } from "./create-banner-params";
+import { CreateBannersParams } from "./create-banners-params";
 import { IBannersRepository } from "../../repositories/i-banners-repository";
 import { badRequest, created, internalError } from "../../../../core/helpers/helpers";
 import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
@@ -9,27 +8,19 @@ import { HttpRequest, HttpResponse, IController } from "../../../../core/protoco
 export class CreateBannersController implements IController {
     constructor(private readonly createBannerRepository: IBannersRepository) { }
 
-    async handle(
-        httpRequest: HttpRequest<CreateBannerParams>
-    ): Promise<HttpResponse<Banner | string>> {
+    async handle(httpRequest: HttpRequest<CreateBannersParams>): Promise<HttpResponse<Banner[]>> {
         try {
-            const requiredFields = ["imageUrl"];
+            const images = httpRequest.files as Express.Multer.File[];
 
-            //Validate body
-            if (!httpRequest.body) {
-                return badRequest("Error: Body missing fields.");
+            if (!images || images.length === 0) {
+                return badRequest("Image files is required");
+            }
+            if (images.length > 4) {
+                return badRequest("Max 4 images");
             }
 
-            //Validate required fields
-            for (const field of requiredFields) {
-                if (!httpRequest?.body?.[field as keyof CreateBannerParams]?.length) {
-                    return badRequest(`Error: Field ${field} is required`);
-                }
-            }
-
-            const banner = await this.createBannerRepository.createBanners(
-                httpRequest.body
-            );
+            const params = { images };
+            const banner = await this.createBannerRepository.createBanners(params)
             return created(banner);
         } catch (error) {
             return internalError(`${error}`);

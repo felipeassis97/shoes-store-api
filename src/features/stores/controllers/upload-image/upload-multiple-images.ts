@@ -17,7 +17,7 @@ export class UploadMultipleImages implements IController {
             if (files.length > 4) {
                 return badRequest("Max 4 images");
             }
-            const response = await this.bucket.uploadmultipleImagesToBucket(files, body.storeId);
+            const response = await this.bucket.uploadmultipleImagesToBucket("multi", files, body.storeId);
             return ok(response);
         }
         catch (error) {

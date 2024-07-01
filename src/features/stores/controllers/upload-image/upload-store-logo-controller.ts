@@ -4,7 +4,7 @@ import { IStoresRepository } from "../../repositories/i-stores-repository";
 import { badRequest, internalError, ok } from "../../../../core/helpers/helpers";
 import { HttpRequest, HttpResponse, IController } from "../../../../core/protocols/protocols";
 
-export class UploadStoreLogo implements IController {
+export class UploadStoreLogoController implements IController {
     constructor(private readonly storesRepository: IStoresRepository) { }
 
     async handle(httpRequest: HttpRequest<UploadStoreLogoParams>): Promise<HttpResponse<Store>> {
