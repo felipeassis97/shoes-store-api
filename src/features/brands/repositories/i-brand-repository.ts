@@ -3,6 +3,8 @@ import { CreateBrandParams } from "../controllers/create-brand/create-brand-para
 
 export interface IBrandRepository {
     getBrands(): Promise<Brand[]>;
-    createBrand(params: CreateBrandParams): Promise<Brand>;
+    getBrand(id: string): Promise<Brand>;
     deleteBrand(id: string): Promise<Brand>;
+    createBrand(params: CreateBrandParams): Promise<Brand>;
+
 }
